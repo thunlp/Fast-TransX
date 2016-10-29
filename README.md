@@ -1,6 +1,6 @@
 # Fast-TransE
 
-An implementation of the TransE model (https://www.utc.fr/~bordesan/dokuwiki/_media/en/transe_nips13.pdf) based on the version ("https://github.com/thunlp/KB2E"). The overall framework is similar with some underlying design changes for acceleration. And this implementation can support multi-threaded training to save more time.
+An implementation of TransE [1] for knowledge representation learning (KRL) based on our previous pakcage KB2E ("https://github.com/thunlp/KB2E") for KRL. The overall framework is similar to KB2E, with some underlying design changes for acceleration. This implementation also supports multi-threaded training to save time.
 
 # Evaluation Results
 
@@ -11,7 +11,7 @@ Because the overall framework is similar, we just list the result of transE(this
 |TransE(n = 50, rounds = 3000)|224|76|43.2|65.6|156|
 |Fast-TransE(n = 50, threads = 8, rounds = 3000)|212|70|44.5|66.3|4|
 
-The more results can be found in ("https://github.com/thunlp/KB2E").
+More results can be found in ("https://github.com/thunlp/KB2E").
 
 # Data
 
@@ -29,4 +29,6 @@ You can download FB15K from [[Download]](http://pan.baidu.com/s/1eRD9B4A), and t
 
 g++ transE.cpp -o transE -pthread -O3 -march=native
 
+# Reference
 
+[1] Bordes, Antoine, et al. Translating embeddings for modeling multi-relational data. Proceedings of NIPS, 2013.
