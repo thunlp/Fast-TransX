@@ -1,6 +1,6 @@
 # Fast-TransE
 
-An implementation of TransE [1] for knowledge representation learning (KRL) based on our previous pakcage KB2E ("https://github.com/thunlp/KB2E") for KRL. The overall framework is similar to KB2E, with some underlying design changes for acceleration. This implementation also supports multi-threaded training to save time.
+An extremely fast implementation of TransE [1] for knowledge representation learning (KRL) based on our previous pakcage KB2E ("https://github.com/thunlp/KB2E") for KRL. The overall framework is similar to KB2E, with some underlying design changes for acceleration. This implementation also supports multi-threaded training to save time.
 
 # Evaluation Results
 
@@ -8,8 +8,8 @@ Because the overall framework is similar, we just list the result of transE(this
 
 | Model | MeanRank(Raw)	| MeanRank(Filter)	| Hit@10(Raw)	| Hit@10(Filter)|time(min)|
 | ----- |:-------------:| :----------------:|:-----------:|:-------------:|:---:|
-|TransE(n = 50, rounds = 3000)|224|76|43.2|65.6|156|
-|Fast-TransE(n = 50, threads = 8, rounds = 3000)|212|70|44.5|66.3|4|
+|TransE (n = 50, rounds = 3000)|224|76|43.2|65.6|156|
+|Fast-TransE (n = 50, threads = 8, rounds = 3000)|212|70|44.5|66.3|4|
 
 More results can be found in ("https://github.com/thunlp/KB2E").
 
@@ -28,6 +28,12 @@ You can download FB15K from [[Download]](http://pan.baidu.com/s/1eRD9B4A), and t
 # Compile
 
 g++ transE.cpp -o transE -pthread -O3 -march=native
+
+# Citation
+
+If you use the code, please kindly cite the following paper:
+
+Yankai Lin, Zhiyuan Liu, Maosong Sun, Yang Liu, Xuan Zhu. Learning Entity and Relation Embeddings for Knowledge Graph Completion. The 29th AAAI Conference on Artificial Intelligence (AAAI'15). [[pdf]](http://nlp.csai.tsinghua.edu.cn/~lzy/publications/aaai2015_transr.pdf)
 
 # Reference
 
