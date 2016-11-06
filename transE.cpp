@@ -18,8 +18,8 @@ int dimension = 50;
 float transeAlpha = 0.001;
 float margin = 1;
 
-string inPath = "/";
-string outPath = "/";
+string inPath = "../";
+string outPath = "../";
 
 int *lefHead, *rigHead;
 int *lefTail, *rigTail;
@@ -130,13 +130,12 @@ void init() {
 	while (fscanf(fin, "%d", &trainList[tripleTotal].h) == 1) {
 		tmp = fscanf(fin, "%d", &trainList[tripleTotal].t);
 		tmp = fscanf(fin, "%d", &trainList[tripleTotal].r);
-		trainTail[tripleTotal].h = trainHead[tripleTotal].h;
-		trainTail[tripleTotal].t = trainHead[tripleTotal].t;
-		trainTail[tripleTotal].r = trainHead[tripleTotal].r;
-
-		trainTail[tripleTotal].h = trainHead[tripleTotal].h;
-		trainTail[tripleTotal].t = trainHead[tripleTotal].t;
-		trainTail[tripleTotal].r = trainHead[tripleTotal].r;
+		trainHead[tripleTotal].h = trainList[tripleTotal].h;
+		trainHead[tripleTotal].t = trainList[tripleTotal].t;
+		trainHead[tripleTotal].r = trainList[tripleTotal].r;
+		trainTail[tripleTotal].h = trainList[tripleTotal].h;
+		trainTail[tripleTotal].t = trainList[tripleTotal].t;
+		trainTail[tripleTotal].r = trainList[tripleTotal].r;
 		tripleTotal++;
 	}
 	fclose(fin);
