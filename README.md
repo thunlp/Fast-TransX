@@ -1,6 +1,6 @@
 # Fast-TransE
 
-An extremely fast implementation of TransE [1] for knowledge representation learning (KRL) based on our previous pakcage KB2E ("https://github.com/thunlp/KB2E") for KRL. The overall framework is similar to KB2E, with some underlying design changes for acceleration. This implementation also supports multi-threaded training to save time.
+An extremely fast implementation of TransE [1], TransH [2], TransR [3] for knowledge representation learning (KRL) based on our previous pakcage KB2E ("https://github.com/thunlp/KB2E") for KRL. The overall framework is similar to KB2E, with some underlying design changes for acceleration. This implementation also supports multi-threaded training to save time.
 
 # Evaluation Results
 
@@ -27,7 +27,7 @@ You can download FB15K from [[Download]](http://pan.baidu.com/s/1eRD9B4A), and t
 
 # Compile
 
-g++ transE.cpp -o transE -pthread -O3 -march=native
+g++ transX.cpp -o transX -pthread -O3 -march=native
 
 # Citation
 
@@ -38,3 +38,7 @@ Yankai Lin, Zhiyuan Liu, Maosong Sun, Yang Liu, Xuan Zhu. Learning Entity and Re
 # Reference
 
 [1] Bordes, Antoine, et al. Translating embeddings for modeling multi-relational data. Proceedings of NIPS, 2013.
+
+[2]	Zhen Wang, Jianwen Zhang, et al. Knowledge Graph Embedding by Translating on Hyperplanes. Proceedings of AAAI, 2014.
+
+[3] Yankai Lin, Zhiyuan Liu, Maosong Sun, et al. Learning Entity and Relation Embeddings for Knowledge Graph Completion. Proceedings of AAAI, 2015.
