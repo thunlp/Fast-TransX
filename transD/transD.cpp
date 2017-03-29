@@ -441,8 +441,8 @@ void* train_transD(void *con) {
 */
 
 void out_transD() {
-		FILE* f2 = fopen((outPath + "relation2vec.bern").c_str(), "w");
-		FILE* f3 = fopen((outPath + "entity2vec.bern").c_str(), "w");
+		FILE* f2 = fopen((outPath + "relation2vec.vec").c_str(), "w");
+		FILE* f3 = fopen((outPath + "entity2vec.vec").c_str(), "w");
 		for (int i=0; i < relationTotal; i++) {
 			int last = dimension * i;
 			for (int ii = 0; ii < dimension; ii++)
@@ -457,7 +457,7 @@ void out_transD() {
 		}
 		fclose(f2);
 		fclose(f3);
-		FILE* f1 = fopen((outPath + "A.bern").c_str(),"w");
+		FILE* f1 = fopen((outPath + "A.vec").c_str(),"w");
 		for (int i=0; i < relationTotal; i++) {
 			int last = dimensionR * i;
 			for (int ii = 0; ii < dimensionR; ii++)
