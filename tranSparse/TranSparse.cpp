@@ -10,7 +10,7 @@
 using namespace std;
 
 const float pi = 3.141592653589793238462643383;
-int bern = 1;
+int bern = 0;
 int tranSparseThreads = 8;
 int tranSparseTrainTimes = 1000;
 int nbatches = 100;
@@ -265,14 +265,14 @@ void init() {
 					matrixTail[i * dimension * dimensionR + j * dimension + k] = 0;
 				}
 	
-	FILE* f1 = fopen("../tranSparsedata/entity2vec.bern","r");
+	FILE* f1 = fopen((inPath + "tranSparsedata/entity2vec.bern").c_str(),"r");
 	for (int i = 0; i < entityTotal; i++) {
 		for (int ii = 0; ii < dimension; ii++)
 			tmp = fscanf(f1, "%f", &entityVec[i * dimension + ii]);
 		norm(entityVec + i * dimension, dimension);
 	}
 	fclose(f1);
-	FILE* f2 = fopen("../tranSparsedata/relation2vec.bern","r");
+	FILE* f2 = fopen((inPath + "tranSparsedata/relation2vec.bern").c_str(),"r");
 	for (int i=0; i < relationTotal; i++) {
 		for (int ii=0; ii < dimension; ii++)
 			tmp = fscanf(f2, "%f", &relationVec[i * dimensionR + ii]);

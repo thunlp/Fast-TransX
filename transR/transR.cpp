@@ -11,7 +11,7 @@ using namespace std;
 
 const float pi = 3.141592653589793238462643383;
 
-int bern = 1;
+int bern = 0;
 int transRThreads = 8;
 int transRTrainTimes = 1000;
 int nbatches = 100;
@@ -243,6 +243,7 @@ void init() {
 		left_mean[i] = freqRel[i] / left_mean[i];
 		right_mean[i] = freqRel[i] / right_mean[i];
 	}
+
 	for (int i = 0; i < relationTotal; i++)
 		for (int j = 0; j < dimensionR; j++)
 			for (int k = 0; k < dimension; k++)
@@ -250,14 +251,15 @@ void init() {
 					matrix[i * dimension * dimensionR + j * dimension + k] = 1;
 				else
 					matrix[i * dimension * dimensionR + j * dimension + k] = 0;
-	FILE* f1 = fopen("../transRdata/entity2vec.bern","r");
+
+	FILE* f1 = fopen((inPath + "transRdata/entity2vec.bern").c_str(),"r");
 	for (int i = 0; i < entityTotal; i++) {
 		for (int ii = 0; ii < dimension; ii++)
 			tmp = fscanf(f1, "%f", &entityVec[i * dimension + ii]);
 		norm(entityVec + i * dimension, dimension);
 	}
 	fclose(f1);
-	FILE* f2 = fopen("../transRdata/relation2vec.bern","r");
+	FILE* f2 = fopen((inPath + "transRdata/relation2vec.bern").c_str(),"r");
 	for (int i=0; i < relationTotal; i++) {
 		for (int ii=0; ii < dimension; ii++)
 			tmp = fscanf(f2, "%f", &relationVec[i * dimensionR + ii]);

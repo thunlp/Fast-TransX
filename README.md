@@ -4,12 +4,15 @@ An extremely fast implementation of TransE [1], TransH [2], TransR [3], TransD [
 
 # Evaluation Results
 
-Because the overall framework is similar, we just list the result of transE(this and previous model) in dateset FB15k.
+Because the overall framework is similar, we just list the result of transE(previous model) and new implemented models in dateset FB15k.
 
 | Model | MeanRank(Raw)	| MeanRank(Filter)	| Hit@10(Raw)	| Hit@10(Filter)|time(min)|
 | ----- |:-------------:| :----------------:|:-----------:|:-------------:|:---:|
-|TransE (n = 50, rounds = 3000)|224|76|43.2|65.6|156|
-|Fast-TransE (n = 50, threads = 8, rounds = 3000)|212|70|44.5|66.3|4|
+|TransE (n = 50, rounds = 1000)|210|82|41.9|61.3|59m47s|
+|Fast-TransE (n = 50, threads = 8, rounds = 1000)|212|82|41.4|59.7|45s|
+|Fast-TransH (n = 50, threads = 8, rounds = 1000)|203|67|44.6|63.1|2m24s|
+|Fast-TransR (n = 50, threads = 8, rounds = 1000)|196|76|45.6|69.1|19m34s|
+|Fast-TransD (n = 50, threads = 8, rounds = 1000)|210|73|43.5|64|3m19s|
 
 More results can be found in ("https://github.com/thunlp/KB2E").
 

@@ -11,7 +11,7 @@ using namespace std;
 
 const float pi = 3.141592653589793238462643383;
 
-int bern = 1;
+int bern = 0;
 int transHThreads = 8;
 int transHTrainTimes = 1000;
 int nbatches = 100;
