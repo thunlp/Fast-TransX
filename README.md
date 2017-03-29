@@ -6,7 +6,7 @@ An extremely fast implementation of TransE [1], TransH [2], TransR [3], TransD [
 
 Because the overall framework is similar, we just list the result of transE(previous model) and new implemented models in dateset FB15k.
 
-| Model | MeanRank(Raw)	| MeanRank(Filter)	| Hit@10(Raw)	| Hit@10(Filter)|time|
+| Model | MeanRank(Raw)	| MeanRank(Filter)	| Hit@10(Raw)	| Hit@10(Filter)|Time|
 | ----- |:-------------:| :----------------:|:-----------:|:-------------:|:---:|
 |TransE (n = 50, rounds = 1000)|210|82|41.9|61.3|59m47s|
 |Fast-TransE (n = 50, threads = 8, rounds = 1000)|212|82|41.4|59.7|45s|
