@@ -147,8 +147,8 @@ void init() {
 	rigHead = (int *)calloc(entityTotal, sizeof(int));
 	lefTail = (int *)calloc(entityTotal, sizeof(int));
 	rigTail = (int *)calloc(entityTotal, sizeof(int));
-	memset(rigHead, -1, sizeof(rigHead));
-	memset(rigTail, -1, sizeof(rigTail));
+	memset(rigHead, -1, sizeof(int)*entityTotal);
+	memset(rigTail, -1, sizeof(int)*entityTotal);
 	for (int i = 1; i < tripleTotal; i++) {
 		if (trainTail[i].t != trainTail[i - 1].t) {
 			rigTail[trainTail[i - 1].t] = i - 1;
@@ -306,6 +306,7 @@ void* transetrainMode(void *con) {
 		norm(entityVec + dimension * trainList[i].t);
 		norm(entityVec + dimension * j);
 	}
+	pthread_exit(NULL);
 }
 
 void* train_transe(void *con) {
@@ -316,14 +317,15 @@ void* train_transe(void *con) {
 		res = 0;
 		for (int batch = 0; batch < nbatches; batch++) {
 			pthread_t *pt = (pthread_t *)malloc(transeThreads * sizeof(pthread_t));
-			for (int a = 0; a < transeThreads; a++)
+			for (long a = 0; a < transeThreads; a++)
 				pthread_create(&pt[a], NULL, transetrainMode,  (void*)a);
-			for (int a = 0; a < transeThreads; a++)
+			for (long a = 0; a < transeThreads; a++)
 				pthread_join(pt[a], NULL);
 			free(pt);
 		}
 		printf("epoch %d %f\n", epoch, res);
 	}
+	pthread_exit(NULL);
 }
 
 /*
