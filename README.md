@@ -4,17 +4,30 @@ An extremely fast implementation of TransE [1], TransH [2], TransR [3], TransD [
 
 # Evaluation Results
 
-Because the overall framework is similar, we just list the result of transE(previous model) and new implemented models in dateset FB15k.
+Because the overall framework is similar, we just list the result of transE(previous model) and new implemented models in datesets FB15k and WN18.
 
 CPU : Intel Core i7-6700k 4.00GHz.
 
+FB15K:
+
 | Model | MeanRank(Raw)	| MeanRank(Filter)	| Hit@10(Raw)	| Hit@10(Filter)|Time|
 | ----- |:-------------:| :----------------:|:-----------:|:-------------:|:---:|
-|TransE (n = 50, rounds = 1000)|210|82|41.9|61.3|59m47s|
-|Fast-TransE (n = 50, threads = 8, rounds = 1000)|212|82|41.4|59.7|45s|
-|Fast-TransH (n = 50, threads = 8, rounds = 1000)|203|67|44.6|63.1|2m24s|
-|Fast-TransR (n = 50, threads = 8, rounds = 1000)|196|76|45.6|69.1|19m34s|
-|Fast-TransD (n = 50, threads = 8, rounds = 1000)|210|73|43.5|64|3m19s|
+|TransE (n = 50, rounds = 1000)|210|82|41.9|61.3|3587s|
+|Fast-TransE (n = 50, threads = 8, rounds = 1000)|205|69|43.8|63.5|42s|
+|Fast-TransH (n = 50, threads = 8, rounds = 1000)|202|67|43.7|63.0|178s|
+|Fast-TransR (n = 50, threads = 8, rounds = 1000)|196|73|48.8|69.8|1572s|
+|Fast-TransD (n = 100, threads = 8, rounds = 1000)|236|95|49.9|75.2|231s|
+
+
+WN18:
+
+| Model | MeanRank(Raw)	| MeanRank(Filter)	| Hit@10(Raw)	| Hit@10(Filter)|Time|
+| ----- |:-------------:| :----------------:|:-----------:|:-------------:|:---:|
+|TransE (n = 50, rounds = 1000)|251|239|78.9|89.8|1674s|
+|Fast-TransE (n = 50, threads = 8, rounds = 1000)|273|261|71.5|83.3|12s|
+|Fast-TransH (n = 50, threads = 8, rounds = 1000)|285|272|79.8|92.5|121s|
+|Fast-TransR (n = 50, threads = 8, rounds = 1000)|284|271|81.0|94.6|296s|
+|Fast-TransD (n = 100, threads = 8, rounds = 1000)|309|297|78.5|91.9|201s|
 
 More results can be found in ("https://github.com/thunlp/KB2E").
 
