@@ -325,7 +325,6 @@ void* train_transe(void *con) {
 		}
 		printf("epoch %d %f\n", epoch, res);
 	}
-	pthread_exit(NULL);
 }
 
 /*

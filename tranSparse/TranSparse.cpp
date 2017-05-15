@@ -496,7 +496,6 @@ void* train_tranSparse(void *con) {
 		}
 		printf("epoch %d %f\n", epoch, res);
 	}
-	pthread_exit(NULL);
 }
 
 /*
