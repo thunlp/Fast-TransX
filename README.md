@@ -2,6 +2,8 @@
 
 An extremely fast implementation of TransE [1], TransH [2], TransR [3], TransD [4], TranSparse [5] for knowledge representation learning (KRL) based on our previous pakcage KB2E ("https://github.com/thunlp/KB2E") for KRL. The overall framework is similar to KB2E, with some underlying design changes for acceleration. This implementation also supports multi-threaded training to save time.
 
+These codes will be gradually integrated into the new framework [[OpenKE]]("https://github.com/thunlp/openke").
+
 # Evaluation Results
 
 Because the overall framework is similar, we just list the result of transE(previous model) and new implemented models in datesets FB15k and WN18.
