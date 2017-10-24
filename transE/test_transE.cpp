@@ -114,8 +114,8 @@ void prepare() {
 
 float calc_sum(int e1, int e2, int rel) {
     float res = 0;
-    int last1 = e1 * relationTotal * dimensionR + rel * dimensionR;
-    int last2 = e2 * relationTotal * dimensionR + rel * dimensionR;
+    int last1 = e1 * dimension;
+    int last2 = e2 * dimension;
     int lastr = rel * dimensionR;
     for (int i = 0; i < dimensionR; i++)
         res += fabs(entityVec[last1 + i] + relationVec[lastr + i] - entityVec[last2 + i]);
