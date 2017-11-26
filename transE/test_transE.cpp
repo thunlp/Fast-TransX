@@ -8,20 +8,26 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
 
 using namespace std;
 
-int relationTotal;
-int entityTotal;
-int Threads = 8;
-int dimensionR = 50;
-int dimension = 50;
+long relationTotal;
+long entityTotal;
+long Threads = 8;
+long dimensionR = 100;
+long dimension = 100;
+long binaryFlag = 0;
 
 float *entityVec, *relationVec;
-int testTotal, tripleTotal, trainTotal, validTotal;
+long testTotal, tripleTotal, trainTotal, validTotal;
 
 struct Triple {
-    int h, r, t;
+    long h, r, t;
+    long label;
 };
 
 struct cmp_head {
@@ -31,35 +37,49 @@ struct cmp_head {
 };
 
 Triple *testList, *tripleList;
+string initPath = "";
+string inPath = "";
+string note = "";
+int nntotal[5];
+int head_lef[10000];
+int head_rig[10000];
+int tail_lef[10000];
+int tail_rig[10000];
+int head_type[1000000];
+int tail_type[1000000];
 
 void init() {
     FILE *fin;
-    int tmp, h, r, t;
+    long tmp, h, r, t, label;
 
-    fin = fopen("data/relation2id.txt", "r");
-    tmp = fscanf(fin, "%d", &relationTotal);
+    fin = fopen((inPath + "relation2id.txt").c_str(), "r");
+    tmp = fscanf(fin, "%ld", &relationTotal);
     fclose(fin);
     relationVec = (float *)calloc(relationTotal * dimensionR, sizeof(float));
     
-    fin = fopen("data/entity2id.txt", "r");
-    tmp = fscanf(fin, "%d", &entityTotal);
+    fin = fopen((inPath + "entity2id.txt").c_str(), "r");
+    tmp = fscanf(fin, "%ld", &entityTotal);
     fclose(fin);
     entityVec = (float *)calloc(entityTotal * dimension, sizeof(float));
 
-    FILE* f_kb1 = fopen("data/test2id.txt","r");
-    FILE* f_kb2 = fopen("data/triple2id.txt","r");
-    FILE* f_kb3 = fopen("data/valid2id.txt","r");
-    tmp = fscanf(f_kb1, "%d", &testTotal);
-    tmp = fscanf(f_kb2, "%d", &trainTotal);
-    tmp = fscanf(f_kb3, "%d", &validTotal);
+    FILE* f_kb1 = fopen((inPath + "test2id_all.txt").c_str(),"r");
+    FILE* f_kb2 = fopen((inPath + "train2id.txt").c_str(),"r");
+    FILE* f_kb3 = fopen((inPath + "valid2id.txt").c_str(),"r");
+    tmp = fscanf(f_kb1, "%ld", &testTotal);
+    tmp = fscanf(f_kb2, "%ld", &trainTotal);
+    tmp = fscanf(f_kb3, "%ld", &validTotal);
     tripleTotal = testTotal + trainTotal + validTotal;
     testList = (Triple *)calloc(testTotal, sizeof(Triple));
     tripleList = (Triple *)calloc(tripleTotal, sizeof(Triple));
-
-    for (int i = 0; i < testTotal; i++) {
-        tmp = fscanf(f_kb1, "%d", &h);
-        tmp = fscanf(f_kb1, "%d", &t);
-        tmp = fscanf(f_kb1, "%d", &r);
+    memset(nntotal, 0, sizeof(nntotal));
+    for (long i = 0; i < testTotal; i++) {
+    	tmp = fscanf(f_kb1, "%ld", &label);
+        tmp = fscanf(f_kb1, "%ld", &h);
+        tmp = fscanf(f_kb1, "%ld", &t);
+        tmp = fscanf(f_kb1, "%ld", &r);
+        label++;
+        nntotal[label]++;
+        testList[i].label = label;
         testList[i].h = h;
         testList[i].t = t;
         testList[i].r = r;
@@ -68,19 +88,19 @@ void init() {
         tripleList[i].r = r;
     }
 
-    for (int i = 0; i < trainTotal; i++) {
-        tmp = fscanf(f_kb2, "%d", &h);
-        tmp = fscanf(f_kb2, "%d", &t);
-        tmp = fscanf(f_kb2, "%d", &r);
+    for (long i = 0; i < trainTotal; i++) {
+        tmp = fscanf(f_kb2, "%ld", &h);
+        tmp = fscanf(f_kb2, "%ld", &t);
+        tmp = fscanf(f_kb2, "%ld", &r);
         tripleList[i + testTotal].h = h;
         tripleList[i + testTotal].t = t;
         tripleList[i + testTotal].r = r;
     }
 
-    for (int i = 0; i < validTotal; i++) {
-        tmp = fscanf(f_kb3, "%d", &h);
-        tmp = fscanf(f_kb3, "%d", &t);
-        tmp = fscanf(f_kb3, "%d", &r);
+    for (long i = 0; i < validTotal; i++) {
+        tmp = fscanf(f_kb3, "%ld", &h);
+        tmp = fscanf(f_kb3, "%ld", &t);
+        tmp = fscanf(f_kb3, "%ld", &r);
         tripleList[i + testTotal + trainTotal].h = h;
         tripleList[i + testTotal + trainTotal].t = t;
         tripleList[i + testTotal + trainTotal].r = r;
@@ -91,43 +111,91 @@ void init() {
     fclose(f_kb3);
 
     sort(tripleList, tripleList + tripleTotal, cmp_head());
+
+    long total_lef = 0;
+    long total_rig = 0;
+    FILE* f_type = fopen((inPath + "type_constrain.txt").c_str(),"r");
+    tmp = fscanf(f_type, "%ld", &tmp);
+    for (int i = 0; i < relationTotal; i++) {
+        int rel, tot;
+        tmp = fscanf(f_type, "%d%d", &rel, &tot);
+        head_lef[rel] = total_lef;
+        for (int j = 0; j < tot; j++) {
+            tmp = fscanf(f_type, "%d", &head_type[total_lef]);
+            total_lef++;
+        }
+        head_rig[rel] = total_lef;
+        sort(head_type + head_lef[rel], head_type + head_rig[rel]);
+        tmp = fscanf(f_type, "%d%d", &rel, &tot);
+        tail_lef[rel] = total_rig;
+        for (int j = 0; j < tot; j++) {
+            tmp = fscanf(f_type, "%d", &tail_type[total_rig]);
+            total_rig++;
+        }
+        tail_rig[rel] = total_rig;
+        sort(tail_type + tail_lef[rel], tail_type + tail_rig[rel]);
+    }
+    fclose(f_type);
+}
+
+void prepre_binary() {
+    struct stat statbuf1;
+    if (stat((initPath + "entity2vec" + note + ".bin").c_str(), &statbuf1) != -1) {  
+        int fd = open((initPath + "entity2vec" + note + ".bin").c_str(), O_RDONLY);
+        float* entityVecTmp = (float*)mmap(NULL, statbuf1.st_size, PROT_READ, MAP_PRIVATE, fd, 0); 
+        memcpy(entityVec, entityVecTmp, statbuf1.st_size);
+        munmap(entityVecTmp, statbuf1.st_size);
+        close(fd);
+    }  
+    struct stat statbuf2;
+    if (stat((initPath + "relation2vec" + note + ".bin").c_str(), &statbuf2) != -1) {  
+        int fd = open((initPath + "relation2vec" + note + ".bin").c_str(), O_RDONLY);
+        float* relationVecTmp =(float*)mmap(NULL, statbuf2.st_size, PROT_READ, MAP_PRIVATE, fd, 0); 
+        memcpy(relationVec, relationVecTmp, statbuf2.st_size);
+        munmap(relationVecTmp, statbuf2.st_size);
+        close(fd);
+    }
 }
 
 void prepare() {
+    if (binaryFlag) {
+        prepre_binary();
+        return;
+    }
     FILE *fin;
-    int tmp;
-    fin = fopen("entity2vec.vec", "r");
-    for (int i = 0; i < entityTotal; i++) {
-        int last = i * dimension;
-        for (int j = 0; j < dimension; j++)
+    long tmp;
+    fin = fopen((initPath + "entity2vec" + note + ".vec").c_str(), "r");
+    for (long i = 0; i < entityTotal; i++) {
+        long last = i * dimension;
+        for (long j = 0; j < dimension; j++)
             tmp = fscanf(fin, "%f", &entityVec[last + j]);
     }
     fclose(fin);
-    fin = fopen("relation2vec.vec", "r");
-    for (int i = 0; i < relationTotal; i++) {
-        int last = i * dimensionR;
-        for (int j = 0; j < dimensionR; j++)
+    fin = fopen((initPath + "relation2vec" + note + ".vec").c_str(), "r");
+    for (long i = 0; i < relationTotal; i++) {
+        long last = i * dimensionR;
+        for (long j = 0; j < dimensionR; j++)
             tmp = fscanf(fin, "%f", &relationVec[last + j]);
     }
-    fclose(fin);  
+    fclose(fin);
 }
 
-float calc_sum(int e1, int e2, int rel) {
+float calc_sum(long e1, long e2, long rel) {
     float res = 0;
-    int last1 = e1 * dimension;
-    int last2 = e2 * dimension;
-    int lastr = rel * dimensionR;
-    for (int i = 0; i < dimensionR; i++)
+    long last1 = e1 * dimension;
+    long last2 = e2 * dimension;
+    long lastr = rel * dimensionR;
+    for (long i = 0; i < dimensionR; i++)
         res += fabs(entityVec[last1 + i] + relationVec[lastr + i] - entityVec[last2 + i]);
     return res;
 }
 
-bool find(int h, int t, int r) {
-    int lef = 0;
-    int rig = tripleTotal - 1;
-    int mid;
+bool find(long h, long t, long r) {
+    long lef = 0;
+    long rig = tripleTotal - 1;
+    long mid;
     while (lef + 1 < rig) {
-        int mid = (lef + rig) >> 1;
+        long mid = (lef + rig) >> 1;
         if ((tripleList[mid]. h < h) || (tripleList[mid]. h == h && tripleList[mid]. r < r) || (tripleList[mid]. h == h && tripleList[mid]. r == r && tripleList[mid]. t < t)) lef = mid; else rig = mid;
     }
     if (tripleList[lef].h == h && tripleList[lef].r == r && tripleList[lef].t == t) return true;
@@ -135,31 +203,45 @@ bool find(int h, int t, int r) {
     return false;
 }
 
-float *l_filter_tot, *r_filter_tot, *l_tot, *r_tot;
-float *l_filter_rank, *r_filter_rank, *l_rank, *r_rank;
+float *l_filter_tot[6], *r_filter_tot[6], *l_tot[6], *r_tot[6];
+float *l_filter_rank[6], *r_filter_rank[6], *l_rank[6], *r_rank[6];
 
 void* testMode(void *con) {
-    int id;
+    long id;
     id = (unsigned long long)(con);
-    int lef = testTotal / (Threads) * id;
-    int rig = testTotal / (Threads) * (id + 1) - 1;
+    long lef = testTotal / (Threads) * id;
+    long rig = testTotal / (Threads) * (id + 1) - 1;
     if (id == Threads - 1) rig = testTotal - 1;
-    for (int i = lef; i <= rig; i++) {
-        int h = testList[i].h;
-        int t = testList[i].t;
-        int r = testList[i].r;
+    for (long i = lef; i <= rig; i++) {
+        long h = testList[i].h;
+        long t = testList[i].t;
+        long r = testList[i].r;
+        long label = testList[i].label;
         float minimal = calc_sum(h, t, r);
-        int l_filter_s = 0;
-        int l_s = 0;
-        int r_filter_s = 0;
-        int r_s = 0;
-        for (int j = 0; j <= entityTotal; j++) {
+        long l_filter_s = 0;
+        long l_s = 0;
+        long r_filter_s = 0;
+        long r_s = 0;
+        long l_filter_s_constrain = 0;
+        long l_s_constrain = 0;
+        long r_filter_s_constrain = 0;
+        long r_s_constrain = 0;
+        long type_head = head_lef[r], type_tail = tail_lef[r];
+        for (long j = 0; j <= entityTotal; j++) {
             if (j != h) {
                 float value = calc_sum(j, t, r);
                 if (value < minimal) {
                     l_s += 1;
                     if (not find(j, t, r))
                         l_filter_s += 1;
+                }
+                while (type_head < head_rig[r] && head_type[type_head] < j) type_head++;
+                if (type_head < head_rig[r] && head_type[type_head] == j) {
+                    if (value < minimal) {
+                        l_s_constrain += 1;
+                        if (not find(j, t, r))
+                            l_filter_s_constrain += 1;
+                    }
                 }
             }
             if (j != t) {
@@ -169,58 +251,130 @@ void* testMode(void *con) {
                     if (not find(h, j, r))
                         r_filter_s += 1;
                 }
+                while (type_tail < tail_rig[r] && tail_type[type_tail] < j) type_tail++;
+                if (type_tail < tail_rig[r] && tail_type[type_tail] == j) {
+                    if (value < minimal) {
+                        r_s_constrain += 1;
+                        if (not find(h, j, r))
+                            r_filter_s_constrain += 1;
+                    }
+                }
             }
         }
-        if (l_filter_s < 10) l_filter_tot[id] += 1;
-        if (l_s < 10) l_tot[id] += 1;
-        if (r_filter_s < 10) r_filter_tot[id] += 1;
-        if (r_s < 10) r_tot[id] += 1;
+        if (l_filter_s < 10) l_filter_tot[0][id] += 1;
+        if (l_s < 10) l_tot[0][id] += 1;
+        if (r_filter_s < 10) r_filter_tot[0][id] += 1;
+        if (r_s < 10) r_tot[0][id] += 1;
 
-        l_filter_rank[id] += l_filter_s;
-        r_filter_rank[id] += r_filter_s;
-        l_rank[id] += l_s;
-        r_rank[id] += r_s;
+        l_filter_rank[0][id] += l_filter_s;
+        r_filter_rank[0][id] += r_filter_s;
+        l_rank[0][id] += l_s;
+        r_rank[0][id] += r_s;
+
+        if (l_filter_s < 10) l_filter_tot[label][id] += 1;
+        if (l_s < 10) l_tot[label][id] += 1;
+        if (r_filter_s < 10) r_filter_tot[label][id] += 1;
+        if (r_s < 10) r_tot[label][id] += 1;
+
+        l_filter_rank[label][id] += l_filter_s;
+        r_filter_rank[label][id] += r_filter_s;
+        l_rank[label][id] += l_s;
+        r_rank[label][id] += r_s;
+
+
+
+        if (l_filter_s_constrain < 10) l_filter_tot[5][id] += 1;
+        if (l_s_constrain < 10) l_tot[5][id] += 1;
+        if (r_filter_s_constrain < 10) r_filter_tot[5][id] += 1;
+        if (r_s_constrain < 10) r_tot[5][id] += 1;
+
+        l_filter_rank[5][id] += l_filter_s_constrain;
+        r_filter_rank[5][id] += r_filter_s_constrain;
+        l_rank[5][id] += l_s_constrain;
+        r_rank[5][id] += r_s_constrain;
     }
+
+
     pthread_exit(NULL);
 }
 
 void* test(void *con) {
-    l_filter_tot = (float *)calloc(Threads, sizeof(float));
-    r_filter_tot = (float *)calloc(Threads, sizeof(float));
-    l_tot = (float *)calloc(Threads, sizeof(float));
-    r_tot = (float *)calloc(Threads, sizeof(float));
+	for (int i = 0; i <= 5; i++) {
+	    l_filter_tot[i] = (float *)calloc(Threads, sizeof(float));
+	    r_filter_tot[i] = (float *)calloc(Threads, sizeof(float));
+	    l_tot[i] = (float *)calloc(Threads, sizeof(float));
+	    r_tot[i] = (float *)calloc(Threads, sizeof(float));
 
-    l_filter_rank = (float *)calloc(Threads, sizeof(float));
-    r_filter_rank = (float *)calloc(Threads, sizeof(float));
-    l_rank = (float *)calloc(Threads, sizeof(float));
-    r_rank = (float *)calloc(Threads, sizeof(float));
+	    l_filter_rank[i] = (float *)calloc(Threads, sizeof(float));
+	    r_filter_rank[i] = (float *)calloc(Threads, sizeof(float));
+	    l_rank[i] = (float *)calloc(Threads, sizeof(float));
+	    r_rank[i] = (float *)calloc(Threads, sizeof(float));
+	}
 
     pthread_t *pt = (pthread_t *)malloc(Threads * sizeof(pthread_t));
-    for (int a = 0; a < Threads; a++)
+    for (long a = 0; a < Threads; a++)
         pthread_create(&pt[a], NULL, testMode,  (void*)a);
-    for (int a = 0; a < Threads; a++)
+    for (long a = 0; a < Threads; a++)
         pthread_join(pt[a], NULL);
     free(pt);
-    for (int a = 1; a < Threads; a++) {
-        l_filter_tot[a] += l_filter_tot[a - 1];
-        r_filter_tot[a] += r_filter_tot[a - 1];
-        l_tot[a] += l_tot[a - 1];
-        r_tot[a] += r_tot[a - 1];
+	for (int i = 0; i <= 5; i++)
+    for (long a = 1; a < Threads; a++) {
+        l_filter_tot[i][a] += l_filter_tot[i][a - 1];
+        r_filter_tot[i][a] += r_filter_tot[i][a - 1];
+        l_tot[i][a] += l_tot[i][a - 1];
+        r_tot[i][a] += r_tot[i][a - 1];
 
-        l_filter_rank[a] += l_filter_rank[a - 1];
-        r_filter_rank[a] += r_filter_rank[a - 1];
-        l_rank[a] += l_rank[a - 1];
-        r_rank[a] += r_rank[a - 1];
+        l_filter_rank[i][a] += l_filter_rank[i][a - 1];
+        r_filter_rank[i][a] += r_filter_rank[i][a - 1];
+        l_rank[i][a] += l_rank[i][a - 1];
+        r_rank[i][a] += r_rank[i][a - 1];
     }
-
-    printf("left %f %f\n", l_rank[Threads - 1] / testTotal, l_tot[Threads - 1] / testTotal);
-    printf("left(filter) %f %f\n", l_filter_rank[Threads - 1] / testTotal, l_filter_tot[Threads - 1] / testTotal);
-    printf("right %f %f\n", r_rank[Threads - 1] / testTotal, r_tot[Threads - 1] / testTotal);
-    printf("right(filter) %f %f\n", r_filter_rank[Threads - 1] / testTotal, r_filter_tot[Threads - 1] / testTotal);
+   	for (int i = 0; i <= 0; i++) {
+	    printf("left %f %f\n", l_rank[i][Threads - 1] / testTotal, l_tot[i][Threads - 1] / testTotal);
+	    printf("left(filter) %f %f\n", l_filter_rank[i][Threads - 1] / testTotal, l_filter_tot[i][Threads - 1] / testTotal);
+	    printf("right %f %f\n", r_rank[i][Threads - 1] / testTotal, r_tot[i][Threads - 1] / testTotal);
+	    printf("right(filter) %f %f\n", r_filter_rank[i][Threads - 1] / testTotal, r_filter_tot[i][Threads - 1] / testTotal);
+	}
+    for (int i = 5; i <= 5; i++) {
+        printf("left %f %f\n", l_rank[i][Threads - 1] / testTotal, l_tot[i][Threads - 1] / testTotal);
+        printf("left(filter) %f %f\n", l_filter_rank[i][Threads - 1] / testTotal, l_filter_tot[i][Threads - 1] / testTotal);
+        printf("right %f %f\n", r_rank[i][Threads - 1] / testTotal, r_tot[i][Threads - 1] / testTotal);
+        printf("right(filter) %f %f\n", r_filter_rank[i][Threads - 1] / testTotal, r_filter_tot[i][Threads - 1] / testTotal);
+    }
+	for (int i = 1; i <= 4; i++) {
+	    printf("left %f %f\n", l_rank[i][Threads - 1] / nntotal[i], l_tot[i][Threads - 1] / nntotal[i]);
+	    printf("left(filter) %f %f\n", l_filter_rank[i][Threads - 1] / nntotal[i], l_filter_tot[i][Threads - 1] / nntotal[i]);
+	    printf("right %f %f\n", r_rank[i][Threads - 1] / nntotal[i], r_tot[i][Threads - 1] / nntotal[i]);
+	    printf("right(filter) %f %f\n", r_filter_rank[i][Threads - 1] / nntotal[i], r_filter_tot[i][Threads - 1] / nntotal[i]);
+	}
 }
 
+long ArgPos(char *str, long argc, char **argv) {
+    long a;
+    for (a = 1; a < argc; a++) if (!strcmp(str, argv[a])) {
+        if (a == argc - 1) {
+            printf("Argument missing for %s\n", str);
+            exit(1);
+        }
+        return a;
+    }
+    return -1;
+}
 
-int main() {
+void setparameters(long argc, char **argv) {
+    long i;
+    if ((i = ArgPos((char *)"-size", argc, argv)) > 0) dimension = atoi(argv[i + 1]);
+    if ((i = ArgPos((char *)"-sizeR", argc, argv)) > 0) dimensionR = atoi(argv[i + 1]);
+    if ((i = ArgPos((char *)"-input", argc, argv)) > 0) inPath = argv[i + 1];
+    if ((i = ArgPos((char *)"-init", argc, argv)) > 0) initPath = argv[i + 1];
+    if ((i = ArgPos((char *)"-thread", argc, argv)) > 0) Threads = atoi(argv[i + 1]);
+    if ((i = ArgPos((char *)"-binary", argc, argv)) > 0) binaryFlag = atoi(argv[i + 1]);
+    if ((i = ArgPos((char *)"-note", argc, argv)) > 0) note = argv[i + 1];
+
+} 
+
+int main(int argc, char **argv) {
+    setparameters(argc, argv);
     init();
     prepare();
     test(NULL);
