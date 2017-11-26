@@ -47,7 +47,48 @@ You can download FB15K from [[Download]](http://pan.baidu.com/s/1eRD9B4A), and t
 
 # Compile
 
-g++ transX.cpp -o transX -pthread -O3 -march=native
+	g++ transX.cpp -o transX -pthread -O3 -march=native
+	
+	g++ test_transX.cpp -o test_ transX -pthread -O3 -march=native
+
+# Train
+
+	./transX [-size SIZE] [-sizeR SIZER]
+	         [-input INPUT] [-output OUTPUT] [-load LOAD]
+	         [-load-binary 0/1] [-out-binary 0/1]
+	         [-thread THREAD] [-epochs EPOCHS] [-nbatchs NBATCHS]
+	         [-alpha ALPHA] [-margin MARGIN]
+	         [-note NOTE]
+
+	optional arguments:
+	-size SIZE           dimension of entity embeddings
+	-sizeR SIZER         dimension of relation embeddings
+	-input INPUT         folder of training data
+	-output OUTPUT       folder of outputing results
+	-load LOAD           folder of pretrained data
+	-load-binary [0/1]   [1] results will be outputed in the binary form
+	-out-binary [0/1]    [1] pretrained data need to load in is in the binary form
+	-thread THREAD       number of worker threads
+	-epochs EPOCHS       number of epochs
+	-nbatchs NBATCHS     number of batchs for each epoch
+	-alpha ALPHA         learning rate
+	-margin MARGIN       margin in max-margin loss for pairwise training
+	-note NOTE           information you want to add to the filename
+	
+# Test
+	./test_transX [-size SIZE] [-sizeR SIZER]
+	         [-input INPUT] [-init INIT]
+	         [-binary 0/1] [-thread THREAD]
+	         [-note NOTE]
+
+	optional arguments:
+	-size SIZE           dimension of entity embeddings
+	-sizeR SIZER         dimension of relation embeddings
+	-input INPUT         folder of testing data
+	-init INIT           folder of embeddings
+	-binary [0/1]        [1] embeddings are in the binary form
+	-thread THREAD       number of worker threads
+	-note NOTE           information you want to add to the filename
 
 # Citation
 
