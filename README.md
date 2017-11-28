@@ -56,7 +56,7 @@ You can download FB15K from [[Download]](http://pan.baidu.com/s/1eRD9B4A), and t
 	./transX [-size SIZE] [-sizeR SIZER]
 	         [-input INPUT] [-output OUTPUT] [-load LOAD]
 	         [-load-binary 0/1] [-out-binary 0/1]
-	         [-thread THREAD] [-epochs EPOCHS] [-nbatchs NBATCHS]
+	         [-thread THREAD] [-epochs EPOCHS] [-nbatches NBATCHES]
 	         [-alpha ALPHA] [-margin MARGIN]
 	         [-note NOTE]
 
@@ -70,7 +70,7 @@ You can download FB15K from [[Download]](http://pan.baidu.com/s/1eRD9B4A), and t
 	-out-binary [0/1]    [1] pretrained data need to load in is in the binary form
 	-thread THREAD       number of worker threads
 	-epochs EPOCHS       number of epochs
-	-nbatchs NBATCHS     number of batchs for each epoch
+	-nbatches NBATCHES   number of batches for each epoch
 	-alpha ALPHA         learning rate
 	-margin MARGIN       margin in max-margin loss for pairwise training
 	-note NOTE           information you want to add to the filename

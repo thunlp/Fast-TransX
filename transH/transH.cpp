@@ -576,7 +576,7 @@ void setparameters(int argc, char **argv) {
 	if ((i = ArgPos((char *)"-output", argc, argv)) > 0) outPath = argv[i + 1];
 	if ((i = ArgPos((char *)"-load", argc, argv)) > 0) loadPath = argv[i + 1];
 	if ((i = ArgPos((char *)"-thread", argc, argv)) > 0) threads = atoi(argv[i + 1]);
-	if ((i = ArgPos((char *)"-epoches", argc, argv)) > 0) trainTimes = atoi(argv[i + 1]);
+	if ((i = ArgPos((char *)"-epochs", argc, argv)) > 0) trainTimes = atoi(argv[i + 1]);
 	if ((i = ArgPos((char *)"-nbatches", argc, argv)) > 0) nbatches = atoi(argv[i + 1]);
 	if ((i = ArgPos((char *)"-alpha", argc, argv)) > 0) alpha = atof(argv[i + 1]);
 	if ((i = ArgPos((char *)"-margin", argc, argv)) > 0) margin = atof(argv[i + 1]);
