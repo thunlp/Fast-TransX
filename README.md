@@ -49,7 +49,7 @@ You can download FB15K from [[Download]](http://pan.baidu.com/s/1eRD9B4A), and t
 
 	g++ transX.cpp -o transX -pthread -O3 -march=native
 	
-	g++ test_transX.cpp -o test_ transX -pthread -O3 -march=native
+	g++ test_transX.cpp -o test_transX -pthread -O3 -march=native
 
 # Train
 
