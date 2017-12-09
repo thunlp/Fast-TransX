@@ -37,13 +37,13 @@ More results can be found in ("https://github.com/thunlp/KB2E").
 
 Datasets are required in the following format, containing three files:
 
-triple2id.txt: training file, the first line is the number of triples for training. Then the follow lines are all in the format (e1, e2, rel).
-
 entity2id.txt: all entities and corresponding ids, one per line. The first line is the number of entities.
 
 relation2id.txt: all relations and corresponding ids, one per line. The first line is the number of relations.
 
-You can download FB15K from [[Download]](http://pan.baidu.com/s/1eRD9B4A), and the more datasets can also be found in ("https://github.com/thunlp/KB2E").
+train2id.txt: training file, the first line is the number of triples for training. Then the follow lines are all in the format (e1, e2, rel). ** Note that train2id.txt contains ids from entitiy2id.txt and relation2id.txt instead of the names of the entities and relations.**
+
+We provide FB15K and WN18, and more datasets can be found in ("https://github.com/thunlp/KB2E"). ** If you use your own datasets, please check the format of your training file. Files in the wrong format may cause segmentation fault. Datasets in KB2E also need to change their formats before training.**
 
 # Compile
 
