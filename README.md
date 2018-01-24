@@ -66,8 +66,8 @@ We provide FB15K and WN18, and more datasets can be found in ("https://github.co
 	-input INPUT         folder of training data
 	-output OUTPUT       folder of outputing results
 	-load LOAD           folder of pretrained data
-	-load-binary [0/1]   [1] results will be outputed in the binary form
-	-out-binary [0/1]    [1] pretrained data need to load in is in the binary form
+	-load-binary [0/1]   [1] pretrained data need to load in is in the binary form
+	-out-binary [0/1]    [1] results will be outputed in the binary form
 	-thread THREAD       number of worker threads
 	-epochs EPOCHS       number of epochs
 	-nbatches NBATCHES   number of batches for each epoch
