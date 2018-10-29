@@ -268,7 +268,7 @@ void* testMode(void *con) {
         long r_filter_s_constrain = 0;
         long r_s_constrain = 0;
         long type_head = head_lef[r], type_tail = tail_lef[r];
-        for (long j = 0; j <= entityTotal; j++) {
+        for (long j = 0; j < entityTotal; j++) {
             if (j != h) {
                 float value = calc_sum(j, t, r);
                 if (value < minimal) {
