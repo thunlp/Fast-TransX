@@ -1,5 +1,15 @@
 # Fast-TransX
 
+This repository is a subproject of THU-OpenSK, and all subprojects of THU-OpenSK are as follows.
+
+- [OpenNE](https://www.github.com/thunlp/OpenNE)
+- [OpenKE](https://www.github.com/thunlp/OpenKE)
+  - [KB2E](https://www.github.com/thunlp/KB2E)
+  - [TensorFlow-Transx](https://www.github.com/thunlp/TensorFlow-Transx)
+  - [Fast-TransX](https://www.github.com/thunlp/Fast-TransX)
+- [OpenNRE](https://www.github.com/thunlp/OpenNRE)
+  - [JointNRE](https://www.github.com/thunlp/JointNRE)
+
 An extremely fast implementation of TransE [1], TransH [2], TransR [3], TransD [4], TranSparse [5] for knowledge representation learning (KRL) based on our previous pakcage KB2E ("https://github.com/thunlp/KB2E") for KRL. The overall framework is similar to KB2E, with some underlying design changes for acceleration. This implementation also supports multi-threaded training to save time.
 
 These codes will be gradually integrated into the new framework [[OpenKE]](https://github.com/thunlp/openke).
@@ -59,7 +69,7 @@ We provide FB15K and WN18, and more datasets can be found in ("https://github.co
 	         [-thread THREAD] [-epochs EPOCHS] [-nbatches NBATCHES]
 	         [-alpha ALPHA] [-margin MARGIN]
 	         [-note NOTE]
-
+	
 	optional arguments:
 	-size SIZE           dimension of entity embeddings
 	-sizeR SIZER         dimension of relation embeddings
@@ -74,13 +84,13 @@ We provide FB15K and WN18, and more datasets can be found in ("https://github.co
 	-alpha ALPHA         learning rate
 	-margin MARGIN       margin in max-margin loss for pairwise training
 	-note NOTE           information you want to add to the filename
-	
+
 # Test
 	./test_transX [-size SIZE] [-sizeR SIZER]
 	         [-input INPUT] [-init INIT]
 	         [-binary 0/1] [-thread THREAD]
 	         [-note NOTE]
-
+	
 	optional arguments:
 	-size SIZE           dimension of entity embeddings
 	-sizeR SIZER         dimension of relation embeddings
